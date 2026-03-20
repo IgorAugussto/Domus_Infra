@@ -12,13 +12,6 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - app-net
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   backend:
     build:
@@ -44,7 +37,6 @@ services:
       - db
     env_file:
       - .env
-    volumes:
-      pgdata:
-    networks:
-      - app-net
+
+volumes:
+  pgdata:
