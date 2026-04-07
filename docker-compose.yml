@@ -41,5 +41,15 @@ services:
     env_file:
       - .env
 
+  # ✅ Novo serviço Python
+  extrato:
+    build:
+      context: ..Domus_BackEnd_Py/domus_python
+      dockerfile: Dockerfile.python
+    container_name: extrato_container
+    restart: always
+    ports:
+      - "5000:5000"
+
 volumes:
   pgdata:
