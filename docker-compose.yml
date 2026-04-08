@@ -36,6 +36,7 @@ services:
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRATION=${JWT_EXPIRATION:-3600000}
+      - STATEMENT_SERVICE_URL=http://extrato:5000  
     ports:
       - "8080:8080"
     env_file:
@@ -44,7 +45,7 @@ services:
   # ✅ Novo serviço Python
   extrato:
     build:
-      context: ..Domus_BackEnd_Py/domus_python
+      context: ../Domus_BackEnd_Py/domus_python
       dockerfile: Dockerfile.python
     container_name: extrato_container
     restart: always
