@@ -7,11 +7,15 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: localhost
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -19,8 +23,11 @@ services:
       dockerfile: Dockerfile
     container_name: backend_container
     restart: no
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      - SPRING_PROFILES_ACTIVE=dev               
+      - SPRING_PROFILES_ACTIVE=dev
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
@@ -29,14 +36,21 @@ services:
       - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRATION=${JWT_EXPIRATION:-3600000}
+      - STATEMENT_SERVICE_URL=http://extrato:5000  
     ports:
       - "8080:8080"
-    depends_on:
-      - db
-    links:
-      - db
     env_file:
       - .env
+
+  # ✅ Novo serviço Python
+  extrato:
+    build:
+      context: ../Domus_BackEnd_Py/domus_python
+      dockerfile: Dockerfile.python
+    container_name: extrato_container
+    restart: always
+    ports:
+      - "5000:5000"
 
 volumes:
   pgdata:
