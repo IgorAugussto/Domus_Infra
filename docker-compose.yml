@@ -76,6 +76,8 @@ services:
       - "8080:8080"
     env_file:
       - .env
+    volumes:                                          # ← adiciona isso
+      - /keystore/keystore.p12:/keystore/keystore.p12 # ← e isso  
 
   # ── Microserviço Python (parser de extratos) ─────────────────────────────
   extrato:
